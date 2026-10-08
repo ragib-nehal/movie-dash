@@ -1,6 +1,6 @@
-# MovieLens, frame by frame
+# MovieDash, frame by frame
 
-A Streamlit dashboard that turns 100,000 MovieLens ratings into four focused answers:
+A Streamlit dashboard that turns 100,000 ratings into four focused answers:
 
 1. Which genres appear among the movies that were rated?
 2. Which genres have the highest and lowest average ratings?
@@ -45,7 +45,7 @@ Run the automated checks with:
 ```text
 app.py                         Streamlit page and Plotly figures
 analysis.py                    Validated data loading and aggregations
-data/movie_ratings.csv         MovieLens source data
+data/movie_ratings.csv         Bundled ratings data
 tests/                         Analysis and Streamlit smoke tests
 .streamlit/config.toml         Dashboard theme
 docs/build_log.md              Prompt and revision record

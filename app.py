@@ -1,4 +1,4 @@
-"""Streamlit entrypoint for the MovieLens dashboard."""
+"""Streamlit entrypoint for the MovieDash dashboard."""
 
 import os
 from pathlib import Path
@@ -19,7 +19,7 @@ from analysis import (
 
 DATA_PATH = Path(
     os.environ.get(
-        "MOVIELENS_DATA_PATH",
+        "MOVIEDASH_DATA_PATH",
         Path(__file__).parent / "data" / "movie_ratings.csv",
     )
 )
@@ -46,7 +46,7 @@ DARK_THEME = {
 
 
 st.set_page_config(
-    page_title="MovieLens, frame by frame",
+    page_title="MovieDash, frame by frame",
     page_icon="🎞️",
     layout="wide",
 )
@@ -122,10 +122,10 @@ def render_dashboard() -> None:
     try:
         ratings = get_ratings(str(DATA_PATH))
     except (FileNotFoundError, ValueError) as error:
-        st.error(f"The MovieLens data could not be loaded. {error}")
+        st.error(f"The MovieDash data could not be loaded. {error}")
         st.stop()
 
-    st.title("MovieLens, frame by frame")
+    st.title("MovieDash, frame by frame")
     st.markdown(
         '<p class="catalog-intro">A guided look at what viewers rated, which genres earned their confidence, how reception shifted across release years, and which films still lead when popularity matters.</p>',
         unsafe_allow_html=True,
@@ -275,7 +275,7 @@ def render_dashboard() -> None:
         )
 
     st.divider()
-    st.caption("Source: GroupLens MovieLens · 100,000 ratings from 943 viewers across 1,682 movies")
+    st.caption("Source: GroupLens 100K dataset · 100,000 ratings from 943 viewers across 1,682 movies")
 
 
 render_dashboard()

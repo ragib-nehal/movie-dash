@@ -1,4 +1,4 @@
-"""Testable data transformations for the MovieLens dashboard."""
+"""Testable data transformations for the MovieDash dashboard."""
 
 from collections.abc import Sequence
 import math

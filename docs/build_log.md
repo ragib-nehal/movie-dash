@@ -1,4 +1,4 @@
-# MovieLens Dashboard Build Log
+# MovieDash Dashboard Build Log
 
 These are working notes from the actual build, kept for the follow-up dashboard review.
 

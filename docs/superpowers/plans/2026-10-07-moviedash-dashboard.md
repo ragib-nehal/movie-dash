@@ -1,8 +1,8 @@
-# MovieLens Streamlit Dashboard Implementation Plan
+# MovieDash Streamlit Dashboard Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use `superpowers:executing-plans` to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Build and locally verify a polished, single-page Streamlit dashboard that answers all four required MovieLens questions.
+**Goal:** Build and locally verify a polished, single-page Streamlit dashboard that answers all four required MovieDash questions.
 
 **Architecture:** Keep statistical transformations in a small, pure `analysis.py` module and presentation in `app.py`. Use pandas for aggregation, Plotly Express for charts, Streamlit for the interface, and pytest for behavior-focused verification.
 

@@ -12,7 +12,7 @@ def test_dashboard_renders_required_sections_and_controls() -> None:
     app = AppTest.from_file(APP_PATH, default_timeout=20).run()
 
     assert not app.exception
-    assert app.title[0].value == "MovieLens, frame by frame"
+    assert app.title[0].value == "MovieDash, frame by frame"
     assert [metric.label for metric in app.metric] == ["Ratings", "Movies", "Viewers"]
     assert [heading.value for heading in app.subheader] == [
         "1. What genres were rated?",
@@ -67,7 +67,7 @@ def test_dashboard_reports_malformed_data_without_a_traceback(
             "genres": ["Drama"],
         }
     ).to_csv(csv_path, index=False)
-    monkeypatch.setenv("MOVIELENS_DATA_PATH", str(csv_path))
+    monkeypatch.setenv("MOVIEDASH_DATA_PATH", str(csv_path))
 
     app = AppTest.from_file(APP_PATH, default_timeout=20).run()
 
