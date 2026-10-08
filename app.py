@@ -23,11 +23,26 @@ DATA_PATH = Path(
         Path(__file__).parent / "data" / "movie_ratings.csv",
     )
 )
-INK = "#172033"
-IVORY = "#F7F4EC"
-RED = "#C84A3A"
-SLATE = "#526071"
-GOLD = "#D8A43B"
+LIGHT_THEME = {
+    "background": "#F7F4EC",
+    "surface": "#EEE9DE",
+    "text": "#172033",
+    "muted": "#526071",
+    "accent": "#C84A3A",
+    "gold": "#D8A43B",
+    "grid": "rgba(82,96,113,0.16)",
+    "hover_text": "#FFFFFF",
+}
+DARK_THEME = {
+    "background": "#0E1420",
+    "surface": "#171F2D",
+    "text": "#F4EFE6",
+    "muted": "#B8C1CE",
+    "accent": "#EF6A5B",
+    "gold": "#E2B95E",
+    "grid": "rgba(184,193,206,0.18)",
+    "hover_text": "#0E1420",
+}
 
 
 st.set_page_config(
@@ -43,44 +58,62 @@ def get_ratings(path: str) -> pd.DataFrame:
     return load_ratings(path)
 
 
-def style_figure(figure: go.Figure, *, height: int = 480) -> go.Figure:
+def style_figure(
+    figure: go.Figure, palette: dict[str, str], *, height: int = 480
+) -> go.Figure:
     """Apply the shared film-catalog chart treatment."""
     figure.update_layout(
         height=height,
         paper_bgcolor="rgba(0,0,0,0)",
         plot_bgcolor="rgba(0,0,0,0)",
-        font={"family": "Inter, Arial, sans-serif", "color": INK, "size": 13},
+        font={"family": "Inter, Arial, sans-serif", "color": palette["text"], "size": 13},
         margin={"l": 12, "r": 18, "t": 24, "b": 48},
-        hoverlabel={"bgcolor": INK, "font_color": "#FFFFFF"},
+        hoverlabel={
+            "bgcolor": palette["text"],
+            "font_color": palette["hover_text"],
+        },
         showlegend=False,
     )
-    figure.update_xaxes(showgrid=True, gridcolor="rgba(82,96,113,0.16)", zeroline=False)
+    figure.update_xaxes(showgrid=True, gridcolor=palette["grid"], zeroline=False)
     figure.update_yaxes(showgrid=False, zeroline=False)
     return figure
 
 
 def render_dashboard() -> None:
+    mode_column, toggle_column = st.columns([4, 1])
+    with toggle_column:
+        dark_mode = st.toggle("Dark mode", key="dark_mode")
+    palette = DARK_THEME if dark_mode else LIGHT_THEME
+
     st.markdown(
-        """
+        f"""
         <style>
-        .stApp { background: #F7F4EC; color: #172033; }
-        .block-container { max-width: 1120px; padding-top: 3.25rem; padding-bottom: 5rem; }
-        h1, h2, h3 { font-family: Georgia, 'Times New Roman', serif !important; color: #172033 !important; }
-        h1 { max-width: 760px; font-size: clamp(2.7rem, 7vw, 5.6rem) !important; line-height: .94 !important; letter-spacing: -.045em !important; }
-        h3 { font-size: clamp(1.55rem, 3vw, 2.2rem) !important; margin-top: 2.8rem !important; }
-        p, label, [data-testid="stCaptionContainer"] { color: #526071; }
-        [data-testid="stMetric"] { border-top: 2px solid #172033; padding-top: .8rem; }
-        [data-testid="stMetricLabel"] { font-size: .86rem; }
-        [data-testid="stMetricValue"] { font-family: Georgia, 'Times New Roman', serif; color: #172033; }
-        [data-testid="stPlotlyChart"] { border-bottom: 1px solid rgba(23,32,51,.18); padding-bottom: 1.1rem; }
-        .catalog-kicker { color: #C84A3A; font-weight: 700; letter-spacing: .08em; margin-bottom: .65rem; }
-        .catalog-intro { max-width: 720px; font-size: 1.08rem; line-height: 1.65; margin-bottom: 2rem; }
-        .method-note { border-left: 3px solid #D8A43B; padding-left: .9rem; margin: .3rem 0 1rem; color: #526071; }
-        hr { border-color: rgba(23,32,51,.18) !important; margin: 2.8rem 0 !important; }
-        @media (max-width: 640px) {
-          .block-container { padding-top: 4rem; }
-          h1 { font-size: 3rem !important; }
-        }
+        :root {{ color-scheme: {'dark' if dark_mode else 'light'}; }}
+        .stApp, [data-testid="stAppViewContainer"] {{ background: {palette['background']}; color: {palette['text']}; }}
+        [data-testid="stHeader"] {{ background: {palette['background']}; }}
+        .block-container {{ max-width: 1120px; padding-top: 3.25rem; padding-bottom: 5rem; }}
+        h1, h2, h3 {{ font-family: Georgia, 'Times New Roman', serif !important; color: {palette['text']} !important; }}
+        h1 {{ max-width: 760px; font-size: clamp(2.7rem, 7vw, 5.6rem) !important; line-height: .94 !important; letter-spacing: -.04em !important; }}
+        h3 {{ font-size: clamp(1.55rem, 3vw, 2.2rem) !important; margin-top: 2.8rem !important; }}
+        p, label, [data-testid="stCaptionContainer"] {{ color: {palette['muted']}; }}
+        [data-testid="stWidgetLabel"] p {{ color: {palette['text']}; }}
+        [data-baseweb="select"] > div {{ background: {palette['surface']}; border-color: {palette['muted']}; }}
+        [data-testid="stMetric"] {{ border-top: 2px solid {palette['text']}; padding-top: .8rem; }}
+        [data-testid="stMetricLabel"] {{ font-size: .86rem; }}
+        [data-testid="stMetricValue"] {{ font-family: Georgia, 'Times New Roman', serif; color: {palette['text']}; }}
+        [data-testid="stPlotlyChart"] {{ border-bottom: 1px solid {palette['grid']}; padding-bottom: 1.1rem; }}
+        .catalog-intro {{ max-width: 720px; font-size: 1.08rem; line-height: 1.65; margin-bottom: 2rem; }}
+        .method-note {{ border-left: 1px solid {palette['gold']}; padding-left: .9rem; margin: .3rem 0 1rem; color: {palette['muted']}; }}
+        hr {{ border-color: {palette['grid']} !important; margin: 2.8rem 0 !important; }}
+        ::selection {{ background: {palette['accent']}; color: {palette['hover_text']}; }}
+        :focus-visible {{ outline: 3px solid {palette['gold']} !important; outline-offset: 2px; }}
+        ::-webkit-scrollbar {{ width: 10px; }}
+        ::-webkit-scrollbar-track {{ background: {palette['background']}; }}
+        ::-webkit-scrollbar-thumb {{ background: {palette['muted']}; border: 3px solid {palette['background']}; border-radius: 8px; }}
+        @media (max-width: 640px) {{
+          .block-container {{ padding-top: 4rem; }}
+          h1 {{ font-size: 3rem !important; }}
+        }}
         </style>
         """,
         unsafe_allow_html=True,
@@ -92,7 +125,6 @@ def render_dashboard() -> None:
         st.error(f"The MovieLens data could not be loaded. {error}")
         st.stop()
 
-    st.markdown('<p class="catalog-kicker">100,000 opinions · one film archive</p>', unsafe_allow_html=True)
     st.title("MovieLens, frame by frame")
     st.markdown(
         '<p class="catalog-intro">A guided look at what viewers rated, which genres earned their confidence, how reception shifted across release years, and which films still lead when popularity matters.</p>',
@@ -117,14 +149,14 @@ def render_dashboard() -> None:
         orientation="h",
         text="movie_count",
         labels={"movie_count": "Rated movies", "genre": "Genre"},
-        color_discrete_sequence=[RED],
+        color_discrete_sequence=[palette["accent"]],
     )
     distribution_chart.update_traces(
         texttemplate="%{text:,}", textposition="outside", cliponaxis=False,
         hovertemplate="<b>%{y}</b><br>%{x:,} rated movies<extra></extra>",
     )
     distribution_chart.update_yaxes(categoryorder="total ascending")
-    st.plotly_chart(style_figure(distribution_chart, height=570), width="stretch", config={"displayModeBar": False})
+    st.plotly_chart(style_figure(distribution_chart, palette, height=570), width="stretch", config={"displayModeBar": False})
 
     st.subheader("2. Which genres satisfy viewers most?")
     st.markdown(
@@ -141,7 +173,7 @@ def render_dashboard() -> None:
         custom_data=["rating_count"],
         labels={"mean_rating": "Average rating", "genre": "Genre"},
         color="mean_rating",
-        color_continuous_scale=[(0, SLATE), (0.58, GOLD), (1, RED)],
+        color_continuous_scale=[(0, palette["muted"]), (0.58, palette["gold"]), (1, palette["accent"])],
         range_color=(1, 5),
     )
     satisfaction_chart.update_traces(
@@ -150,7 +182,7 @@ def render_dashboard() -> None:
     )
     satisfaction_chart.update_yaxes(categoryorder="total ascending")
     satisfaction_chart.update_xaxes(range=[0, 5])
-    st.plotly_chart(style_figure(satisfaction_chart, height=570), width="stretch", config={"displayModeBar": False})
+    st.plotly_chart(style_figure(satisfaction_chart, palette, height=570), width="stretch", config={"displayModeBar": False})
 
     st.subheader("3. How did ratings change across release years?")
     st.markdown(
@@ -176,14 +208,14 @@ def render_dashboard() -> None:
             markers=True,
             custom_data=["rating_count"],
             labels={"year": "Movie release year", "mean_rating": "Average rating"},
-            color_discrete_sequence=[RED],
+            color_discrete_sequence=[palette["accent"]],
         )
         trend_chart.update_traces(
-            line={"width": 2.5}, marker={"size": 6, "color": IVORY, "line": {"color": RED, "width": 2}},
+            line={"width": 2.5}, marker={"size": 6, "color": palette["background"], "line": {"color": palette["accent"], "width": 2}},
             hovertemplate="<b>%{x}</b><br>Average %{y:.2f}<br>%{customdata[0]:,} ratings<extra></extra>",
         )
         trend_chart.update_yaxes(range=[1, 5])
-        st.plotly_chart(style_figure(trend_chart, height=470), width="stretch", config={"displayModeBar": False})
+        st.plotly_chart(style_figure(trend_chart, palette, height=470), width="stretch", config={"displayModeBar": False})
     missing_years = int(ratings["year"].isna().sum())
     st.caption(f"{missing_years:,} rating records with no movie release year are excluded from this timeline.")
 
@@ -211,7 +243,7 @@ def render_dashboard() -> None:
             text="mean_rating",
             custom_data=["rating_count"],
             labels={"mean_rating": "Average rating", "title": "Movie"},
-            color_discrete_sequence=[INK],
+            color_discrete_sequence=[palette["text"]],
         )
         ranking_chart.update_traces(
             texttemplate="%{text:.2f}", textposition="outside", cliponaxis=False,
@@ -219,7 +251,7 @@ def render_dashboard() -> None:
         )
         ranking_chart.update_yaxes(categoryorder="array", categoryarray=ranking["title"].tolist()[::-1])
         ranking_chart.update_xaxes(range=[0, 5])
-        st.plotly_chart(style_figure(ranking_chart, height=430), width="stretch", config={"displayModeBar": False})
+        st.plotly_chart(style_figure(ranking_chart, palette, height=430), width="stretch", config={"displayModeBar": False})
 
     fifty_titles = set(top_movies(ratings, min_ratings=50)["title"])
     one_fifty_titles = set(top_movies(ratings, min_ratings=150)["title"])

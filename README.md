@@ -7,7 +7,7 @@ A Streamlit dashboard that turns 100,000 MovieLens ratings into four focused ans
 3. How does mean rating change across movie release years?
 4. Which five movies lead after requiring at least 50 or 150 ratings?
 
-The app includes a genre multiselect for the release-year trend and a 50/150 audience-floor control for the movie ranking.
+The app includes a genre multiselect for the release-year trend, a 50/150 audience-floor control for the movie ranking, and an in-app light/dark theme toggle.
 
 ## Run locally
 

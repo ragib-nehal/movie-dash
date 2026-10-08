@@ -1,3 +1,4 @@
+import json
 from pathlib import Path
 
 import pandas as pd
@@ -21,6 +22,8 @@ def test_dashboard_renders_required_sections_and_controls() -> None:
     ]
     assert len(app.multiselect) == 1
     assert len(app.segmented_control) == 1
+    assert len(app.toggle) == 1
+    assert app.toggle[0].label == "Dark mode"
     assert app.segmented_control[0].options == ["50 ratings", "150 ratings"]
     assert len(app.get("plotly_chart")) == 4
 
@@ -34,6 +37,20 @@ def test_dashboard_controls_rerun_without_errors() -> None:
     assert not app.exception
     assert app.multiselect[0].value == ["Drama", "Comedy"]
     assert app.segmented_control[0].value == "150 ratings"
+
+
+def test_dark_mode_updates_chart_palette_and_persists_across_reruns() -> None:
+    app = AppTest.from_file(APP_PATH, default_timeout=20).run()
+    light_chart = json.loads(app.get("plotly_chart")[0].proto.spec)
+
+    app.toggle[0].set_value(True).run()
+    dark_chart = json.loads(app.get("plotly_chart")[0].proto.spec)
+    app.segmented_control[0].set_value("150 ratings").run()
+
+    assert light_chart["layout"]["font"]["color"] == "#172033"
+    assert dark_chart["layout"]["font"]["color"] == "#F4EFE6"
+    assert dark_chart["data"][0]["marker"]["color"] == "#EF6A5B"
+    assert app.toggle[0].value is True
 
 
 def test_dashboard_reports_malformed_data_without_a_traceback(
