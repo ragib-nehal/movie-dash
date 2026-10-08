@@ -5,3 +5,5 @@ __pycache__/
 *.py[cod]
 .streamlit/secrets.toml
 .superpowers/
+.playwright-cli/
+output/
