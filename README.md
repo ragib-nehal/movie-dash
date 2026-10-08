@@ -15,17 +15,22 @@ Python 3.11 or newer is recommended.
 
 ```bash
 python3 -m venv .venv
-source .venv/bin/activate
-python -m pip install -r requirements.txt
-streamlit run app.py
+.venv/bin/python -m pip install -r requirements.txt
+.venv/bin/python -m streamlit run app.py
 ```
 
-Then open the local URL printed by Streamlit, normally `http://localhost:8501`.
+The first two commands are one-time setup. On later runs, use only:
+
+```bash
+.venv/bin/python -m streamlit run app.py
+```
+
+Then open the local URL printed by Streamlit, normally `http://localhost:8501`. These commands do not depend on virtual-environment activation, so they also work when run in separate terminal invocations.
 
 Run the automated checks with:
 
 ```bash
-python -m pytest -q
+.venv/bin/python -m pytest -q
 ```
 
 ## How the analysis works
