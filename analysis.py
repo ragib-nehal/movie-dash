@@ -1,6 +1,7 @@
 """Testable data transformations for the MovieLens dashboard."""
 
 from collections.abc import Sequence
+import math
 from pathlib import Path
 
 import pandas as pd
@@ -28,10 +29,24 @@ def load_ratings(path: str | Path) -> pd.DataFrame:
         raise ValueError(f"Missing required columns: {', '.join(missing)}")
 
     ratings = ratings.copy()
-    ratings["rating"] = pd.to_numeric(ratings["rating"], errors="coerce")
-    if ratings["rating"].notna().sum() == 0:
-        raise ValueError("Ratings file contains no usable rating values")
-    ratings["year"] = pd.to_numeric(ratings["year"], errors="coerce")
+    numeric_ratings = pd.to_numeric(ratings["rating"], errors="coerce")
+    if (~numeric_ratings.between(1, 5)).any():
+        raise ValueError("Rating values must be finite numbers from 1 to 5")
+
+    raw_years = ratings["year"]
+    numeric_years = pd.to_numeric(raw_years, errors="coerce")
+    missing_years = raw_years.isna()
+    provided_years = numeric_years.loc[~missing_years]
+    years_are_valid = (
+        provided_years.notna()
+        & provided_years.map(math.isfinite)
+        & provided_years.mod(1).eq(0)
+    )
+    if not years_are_valid.all():
+        raise ValueError("Release year values must be finite whole numbers or missing")
+
+    ratings["rating"] = numeric_ratings
+    ratings["year"] = numeric_years
     return ratings
 
 

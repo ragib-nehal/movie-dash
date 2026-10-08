@@ -112,7 +112,47 @@ def test_load_ratings_rejects_unusable_rating_values(tmp_path: Path) -> None:
         }
     ).to_csv(csv_path, index=False)
 
-    with pytest.raises(ValueError, match="no usable rating values"):
+    with pytest.raises(ValueError, match="Rating values must be finite numbers from 1 to 5"):
+        load_ratings(csv_path)
+
+
+@pytest.mark.parametrize("invalid_rating", ["bad", float("inf"), 99])
+def test_load_ratings_rejects_any_invalid_rating_record(
+    tmp_path: Path, invalid_rating: object
+) -> None:
+    csv_path = tmp_path / "ratings.csv"
+    pd.DataFrame(
+        {
+            "user_id": [1, 2],
+            "movie_id": [1, 2],
+            "rating": [5, invalid_rating],
+            "title": ["Valid", "Broken"],
+            "year": [2000, 2001],
+            "genres": ["Drama", "Comedy"],
+        }
+    ).to_csv(csv_path, index=False)
+
+    with pytest.raises(ValueError, match="Rating values must be finite numbers from 1 to 5"):
+        load_ratings(csv_path)
+
+
+@pytest.mark.parametrize("invalid_year", ["not-a-year", float("inf"), 1999.5])
+def test_load_ratings_rejects_invalid_release_years(
+    tmp_path: Path, invalid_year: object
+) -> None:
+    csv_path = tmp_path / "ratings.csv"
+    pd.DataFrame(
+        {
+            "user_id": [1, 2],
+            "movie_id": [1, 2],
+            "rating": [5, 4],
+            "title": ["Valid", "Broken"],
+            "year": [None, invalid_year],
+            "genres": ["Drama", "Comedy"],
+        }
+    ).to_csv(csv_path, index=False)
+
+    with pytest.raises(ValueError, match="Release year values must be finite whole numbers or missing"):
         load_ratings(csv_path)
 
 

@@ -1,5 +1,6 @@
 """Streamlit entrypoint for the MovieLens dashboard."""
 
+import os
 from pathlib import Path
 
 import pandas as pd
@@ -16,7 +17,12 @@ from analysis import (
 )
 
 
-DATA_PATH = Path(__file__).parent / "data" / "movie_ratings.csv"
+DATA_PATH = Path(
+    os.environ.get(
+        "MOVIELENS_DATA_PATH",
+        Path(__file__).parent / "data" / "movie_ratings.csv",
+    )
+)
 INK = "#172033"
 IVORY = "#F7F4EC"
 RED = "#C84A3A"
